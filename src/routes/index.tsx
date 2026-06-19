@@ -1,29 +1,43 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Nav } from "@/components/site/Nav";
+import { Hero } from "@/components/site/Hero";
+import { Services } from "@/components/site/Services";
+import { Portfolio } from "@/components/site/Portfolio";
+import { About } from "@/components/site/About";
+import { Footer } from "@/components/site/Footer";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "Imejination — Aerial & Architectural Photography Studio" },
+      {
+        name: "description",
+        content:
+          "Imejination is a Malaysian photography studio capturing aerial, architectural and commercial imagery for leading property developers.",
+      },
+      { property: "og:title", content: "Imejination — Aerial & Architectural Photography" },
+      {
+        property: "og:description",
+        content: "Elevating properties with stunning aerial and ground perspectives.",
+      },
+      { property: "og:url", content: "/" },
     ],
+    links: [{ rel: "canonical", href: "/" }],
   }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen bg-black text-white">
+      <Nav />
+      <main>
+        <Hero />
+        <Services />
+        <Portfolio />
+        <About />
+      </main>
+      <Footer />
     </div>
   );
 }
