@@ -5,7 +5,6 @@ import logoAsset from "@/assets/imejination-logo.png.asset.json";
 const links = [
   { href: "/#work", label: "Work" },
   { href: "/#services", label: "Services" },
-  { href: "/#about", label: "About" },
   { href: "/brief", label: "Brief" },
   { href: "/#contact", label: "Contact" },
 ];
