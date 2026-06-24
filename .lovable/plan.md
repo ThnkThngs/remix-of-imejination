@@ -1,42 +1,49 @@
+## Add AI Brief Builder
 
-# Imejination — Premium Dark Portfolio
+Add an AI-powered project brief builder to the Imejination site. Users answer a 3-step questionnaire (project type → details → contact), an AI generates a draft production approach, and the lead is saved to the studio inbox.
 
-Build a single-page, cinematic dark portfolio for **imejination** using the provided brand assets and brief.
+The pasted snippet uses `react-router-dom` and Supabase Edge Functions — this project is TanStack Start with Lovable Cloud. I'll port the same UX to the project's conventions.
 
-## Design tokens (src/styles.css)
-- Background: `#000` / charcoal `#121212`
-- Surface: `#1a1a1a`
-- Foreground: white / `#e5e5e5` muted
-- Accent (mint): `#7CC4B8` (matches uploaded logo seafoam)
-- Typography: Inter (body) + Space Grotesk (display) via `<link>` in `__root.tsx`
-- Tokens for shadows, mint glow, thin mint dividers
+### What gets built
 
-## Assets
-Upload the white-text logo (`Asset_2@3.png`) via `lovable-assets` for navbar use on dark bg. Generate ~10 photography images via `imagegen` saved to `src/assets/`:
-- 1 hero: cinematic aerial twilight property shot
-- 4 category thumbnails (aerial, landscape, architecture, still life)
-- 6–8 portfolio shots grouped by the 4 client projects
-- 2 director portraits (moody studio lighting)
+**1. Enable Lovable Cloud** (database + AI gateway + server functions).
 
-## Page structure (src/routes/index.tsx + components)
-1. **Nav** — fixed, transparent→charcoal on scroll, logo left, anchor links right (Work, Services, About, Contact) in mint hover
-2. **Hero** — full-viewport, large aerial photo with dark gradient overlay, huge "IMEJINATION" wordmark, tagline, mint "Explore Portfolio" CTA → smooth scroll
-3. **Services bar** — thin mint top/bottom rule, 5 uppercase labels separated by mint pipes: AERIAL | LANDSCAPE | ARCHITECTURE | PROPERTY | STILL LIFE
-4. **Portfolio** — masonry grid (CSS columns), 4 project groups with label captions, hover: brightness up + mint caption reveal, shutter fade-in via IntersectionObserver
-5. **About** — two-column dark cards for Nicholas Chen (MD) and Moses Lim (ED) with portraits and bios
-6. **Footer/Contact** — IMEJINATION SDN BHD, mailto askimeji@gmail.com, two CTAs (View Projects, Get a Quote), copyright
+**2. Database** — single migration:
+- `leads` table: `id, created_at, name, company, email, phone, preferred_contact, project_type, project_name, location, deadline, deliverables, budget_range, details (jsonb), ai_recommendation, status`
+- RLS: insert allowed for `anon` + `authenticated` (public form); select restricted to `admin` role only.
+- `app_role` enum + `user_roles` + `has_role()` per project conventions (admins read leads later).
+- Required `GRANT`s for `anon`/`authenticated`/`service_role`.
 
-## Animations
-Reusable `<ShutterImage>` component: aperture-style mask + opacity/blur transition triggered on intersect.
+**3. Server function** `src/lib/brief.functions.ts`:
+- `generateBrief({ form })` — validates with Zod, calls Lovable AI Gateway (`google/gemini-3-flash-preview`) via the standard provider helper, returns markdown recommendation. System prompt tuned for an aerial/architectural photography studio (shot list, deliverables, timeline, crew, gear suggestions).
+- `saveLead({ form, recommendation })` — inserts via server publishable client (anon, RLS-protected). Returns `{ id }`.
+- Helper at `src/lib/ai-gateway.server.ts` (per Lovable AI Gateway pattern).
 
-## SEO
-Route `head()`: title "Imejination — Aerial & Architectural Photography", meta description, og tags using hero image.
+**4. New route** `src/routes/brief.tsx`:
+- 3-step wizard matching the pasted design: project type chips → details grid → contact fields → AI output.
+- Uses existing dark theme + mint primary; reuses `Button`, `Input`, `Textarea`, `sonner` toast.
+- TanStack Router `<Link>` + `useSearch` (replaces `useSearchParams`); `?type=` preset still works.
+- `head()` with unique title/description/OG tags.
+- Renders markdown output with a small in-file renderer (headings, bullets, paragraphs).
+- Final step: "Send brief" mailto, call Moses, email link, "back home" link, lead ref id.
 
-## Files
-- `src/styles.css` — add tokens + mint variables
-- `src/routes/__root.tsx` — fonts link, updated default meta
-- `src/routes/index.tsx` — page composition + section meta
-- `src/components/site/{Nav,Hero,Services,Portfolio,About,Footer,ShutterImage}.tsx`
-- `src/assets/*` (generated images) + `imejination-logo.png.asset.json`
+**5. Wire entry points**:
+- Hero "Explore Portfolio" stays; add a secondary mint CTA "Plan your shoot with AI →" linking to `/brief`.
+- Services section: each category chip links to `/brief?type=<label>`.
+- Nav: add "Brief" link.
 
-No backend / Cloud needed.
+### Technical notes
+
+- AI call lives in a `createServerFn` (not a server route) — it's app-internal client→server RPC.
+- `LOVABLE_API_KEY` read inside `.handler()`; provider helper kept in `*.server.ts` and imported only from handlers.
+- Lead insert uses the server publishable client with the anon-insert RLS policy, so no auth required to submit.
+- No `react-router-dom`, no Supabase Edge Function, no client-side AI calls.
+- Errors (429 rate limit, 402 credits) surfaced via toast with clear messages.
+
+### Files
+
+- migration: `leads` + roles infra
+- `src/lib/ai-gateway.server.ts`
+- `src/lib/brief.functions.ts`
+- `src/routes/brief.tsx`
+- edits: `src/components/site/Nav.tsx`, `Hero.tsx`, `Services.tsx`
