@@ -6,25 +6,57 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+.pnpm-debug.log*
 
+# Dependencies
 node_modules
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Testing
+/coverage
+
+# Build outputs
 dist
+/dist/
 dist-ssr
+/.next/
+/out/
 .output
 .vinxi
 .tanstack/**
 .nitro
+
+# Local environment
 *.local
+.env*
 
 # Wrangler / Cloudflare
 .wrangler/
+/.wrangler/
 .dev.vars
+
+# Vercel
+.vercel
+
+# TypeScript
+next-env.d.ts
+
+# Temp
+/tmp/
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
+*.pem
 *.suo
 *.ntvs*
 *.njsproj
