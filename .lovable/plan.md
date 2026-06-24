@@ -1,17 +1,25 @@
-Replace the current minimal Services strip with a richer four-card Services section. The About section was removed in the previous turn, so the new section sits between Work and Footer (still `id="services"`, still positioned right after Portfolio in `src/routes/index.tsx` — no order change needed).
+## Add Social feed section to the homepage
 
-## Cards
-Four cards, each with title, description, and a CTA `Link` to `/brief` with `search={{ type: "<label>" }}`:
+Create a new "Social" section between the Portfolio and Footer on the home route that embeds the Taggbox widget.
 
-1. Aerial & Drone — "Cinematic drone footage and stills for townships, launches, and progress documentation." → `/brief?type=Aerial`
-2. Architecture & Interior — "Designed-space photography for completed buildings, show units, and sales galleries." → `/brief?type=Architecture`
-3. Property & Landscape — "Twilight shoots, lifestyle angles, and township-wide aerials for marketing collateral." → `/brief?type=Property`
-4. Commercial & Still Life — "Food, product, and brand imagery for hospitality and F&B clients." → `/brief?type=Commercial`
+### Changes
 
-## Implementation
-- Rewrite `src/components/site/Services.tsx`:
-  - Keep `id="services"`, dark background, mint dividers.
-  - Section eyebrow + heading ("What we shoot" / "Disciplines"), matching the studio's existing display-serif + mint-accent type system.
-  - 2-col (mobile) / 4-col (desktop) grid of cards. Each card: number index, title, short description, mint "Start a brief →" CTA `Link`.
-  - Preserve the existing fade-up `useInView` reveal pattern.
-- No changes to routing, brief route, Nav, or other components.
+1. **New file `src/components/site/Social.tsx`**
+   - Section with `id="social"`, dark background, matching studio padding (`py-24 md:py-32`) and container width used by Services/Portfolio.
+   - Header block: small "Social" eyebrow label + display-serif heading ("Latest from the field." or similar) + short subtext, with the existing mint divider treatment.
+   - Embed the iframe:
+     ```html
+     <iframe src="https://widget.taggbox.com/328738?website=1"
+             allow="fullscreen"
+             title="Imejination social feed"
+             className="w-full h-[720px] border-0 block" />
+     ```
+   - Wrap in a rounded container consistent with site cards. No client-side fetching, no extra deps.
+   - Reuse the existing `useInView` fade-up reveal pattern used in Services for the header.
+
+2. **Edit `src/routes/index.tsx`**
+   - Import `Social` and render `<Social />` after `<Portfolio />`, before `<Footer />`.
+
+### Out of scope
+- No nav link, no new route, no metadata changes (can add later if wanted).
+- No styling changes to other components.
