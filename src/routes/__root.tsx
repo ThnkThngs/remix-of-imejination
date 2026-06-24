@@ -87,8 +87,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Imejination — Aerial & Architectural Photography" },
       { name: "twitter:description", content: "Imejination is a Malaysian photography studio elevating properties with stunning aerial and ground perspectives." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/87d802f8-c1a6-4b7c-96cf-6e7daf0cbaf4" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/87d802f8-c1a6-4b7c-96cf-6e7daf0cbaf4" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/788a441f-9e1c-4cea-95a7-fd333363ac81" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/788a441f-9e1c-4cea-95a7-fd333363ac81" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
