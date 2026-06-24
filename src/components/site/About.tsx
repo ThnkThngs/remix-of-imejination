@@ -6,12 +6,16 @@ const team = [
   {
     name: "Nicholas Chen",
     role: "Managing Director",
+    phone: "+60 12-920 0789",
+    tel: "+60129200789",
     img: nick,
     bio: "Leads creative direction and oversees every commission — from drone choreography to final colour grade. A decade behind the lens for Malaysia's most ambitious property developers.",
   },
   {
     name: "Moses Lim",
     role: "Executive Director",
+    phone: "+60 18-394 0060",
+    tel: "+60183940060",
     img: moses,
     bio: "Heads operations and client strategy. Translates each developer's vision into production-ready briefs that move on time, on budget, and beyond expectation.",
   },
@@ -31,9 +35,13 @@ export function About() {
               One <span className="text-primary italic">obsession</span> with light.
             </h2>
             <p className="mt-6 text-sm leading-relaxed text-white/60">
-              Imejination is a Kuala Lumpur–based photography studio specialising
-              in property, architecture and commercial imagery. We work where the
-              drone, the tripod and the food stylist all matter.
+              Imejination Sdn Bhd — trading as imeji Studio (Moseslim Photography) —
+              is a Kuala Lumpur–based photography and video production studio
+              specialising in property, architecture and commercial imagery. We work
+              where the drone, the tripod and the food stylist all matter.
+            </p>
+            <p className="mt-4 text-xs uppercase tracking-[0.2em] text-white/40">
+              1.5K+ followers · 98% recommend on Facebook
             </p>
           </div>
 
@@ -59,6 +67,12 @@ export function About() {
                   </p>
                   <div className="my-4 h-px w-10 bg-primary/40" />
                   <p className="text-sm leading-relaxed text-white/60">{m.bio}</p>
+                  <a
+                    href={`tel:${m.tel}`}
+                    className="mt-5 inline-block text-xs uppercase tracking-[0.2em] text-white/70 transition-colors hover:text-primary"
+                  >
+                    {m.phone} →
+                  </a>
                 </div>
               </article>
             ))}

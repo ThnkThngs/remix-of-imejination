@@ -37,17 +37,47 @@ export function Footer() {
                   Studio
                 </p>
                 <p className="mt-2 text-white">IMEJINATION SDN BHD</p>
-                <p className="text-white/50">Kuala Lumpur, Malaysia</p>
+                <p className="text-white/50">
+                  imeji Studio · Moseslim Photography (002659027-A)
+                </p>
+                <a
+                  href="https://share.google/HyJ8NCNjCfUixSeyA"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-1 inline-block text-white/50 transition-colors hover:text-primary"
+                >
+                  Kuala Lumpur, Malaysia →
+                </a>
               </div>
               <div>
                 <p className="text-[11px] uppercase tracking-[0.25em] text-white/40">
-                  Enquiries
+                  Talk to us
                 </p>
                 <a
                   href="mailto:askimeji@gmail.com"
-                  className="mt-2 inline-block text-white transition-colors hover:text-primary"
+                  className="mt-2 block text-white transition-colors hover:text-primary"
                 >
                   askimeji@gmail.com
+                </a>
+                <a
+                  href="tel:+60183940060"
+                  className="mt-1 block text-white/70 transition-colors hover:text-primary"
+                >
+                  +60 18-394 0060 · Moses
+                </a>
+                <a
+                  href="tel:+60129200789"
+                  className="mt-1 block text-white/70 transition-colors hover:text-primary"
+                >
+                  +60 12-920 0789 · Nicholas
+                </a>
+                <a
+                  href="https://www.facebook.com/imejination.my/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-3 inline-block text-xs uppercase tracking-[0.25em] text-primary transition-colors hover:text-white"
+                >
+                  Facebook ↗
                 </a>
               </div>
               <div>
