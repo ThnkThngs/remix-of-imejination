@@ -1,4 +1,5 @@
 import heroImg from "@/assets/hero-aerial.jpg";
+import { Link } from "@tanstack/react-router";
 
 export function Hero() {
   return (
@@ -33,18 +34,18 @@ export function Hero() {
           className="fade-up in-view mt-10 flex flex-wrap items-center gap-4"
           style={{ animationDelay: "0.4s" }}
         >
-          <a
-            href="#work"
+          <Link
+            to="/brief"
             className="group inline-flex items-center gap-3 bg-primary px-8 py-4 text-xs font-medium uppercase tracking-[0.25em] text-black transition-all hover:bg-primary/90"
           >
-            Explore Portfolio
+            Plan your shoot with AI
             <span className="transition-transform group-hover:translate-x-1">→</span>
-          </a>
+          </Link>
           <a
-            href="#contact"
+            href="#work"
             className="text-xs uppercase tracking-[0.25em] text-white/70 underline-offset-8 transition-colors hover:text-primary hover:underline"
           >
-            Commission a Shoot
+            Explore Portfolio
           </a>
         </div>
       </div>

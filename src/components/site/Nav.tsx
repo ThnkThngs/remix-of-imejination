@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import logoAsset from "@/assets/imejination-logo.png.asset.json";
 
 const links = [
-  { href: "#work", label: "Work" },
-  { href: "#services", label: "Services" },
-  { href: "#about", label: "About" },
-  { href: "#contact", label: "Contact" },
+  { href: "/#work", label: "Work" },
+  { href: "/#services", label: "Services" },
+  { href: "/#about", label: "About" },
+  { href: "/brief", label: "Brief" },
+  { href: "/#contact", label: "Contact" },
 ];
 
 export function Nav() {
@@ -26,13 +28,13 @@ export function Nav() {
       }`}
     >
       <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 py-4 md:px-12">
-        <a href="#top" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2">
           <img
             src={logoAsset.url}
             alt="Imejination"
             className="h-8 w-auto md:h-9"
           />
-        </a>
+        </Link>
         <nav className="hidden items-center gap-10 md:flex">
           {links.map((l) => (
             <a
@@ -44,12 +46,12 @@ export function Nav() {
             </a>
           ))}
         </nav>
-        <a
-          href="mailto:askimeji@gmail.com"
+        <Link
+          to="/brief"
           className="hidden rounded-none border border-primary px-4 py-2 text-xs uppercase tracking-[0.2em] text-primary transition-colors hover:bg-primary hover:text-black md:inline-block"
         >
-          Get a Quote
-        </a>
+          AI Brief
+        </Link>
       </div>
     </header>
   );
