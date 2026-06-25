@@ -4,6 +4,7 @@ const navItems = [
   { label: "Food & Beverage", href: "#food" },
   { label: "Live Events & Portraits", href: "#events" },
   { label: "Work With Us", href: "#contact" },
+  { label: "Admin", href: "/admin" },
 ];
 
 const propertyHighlights = [
