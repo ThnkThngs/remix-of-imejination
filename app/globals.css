@@ -642,6 +642,52 @@ footer[id] {
   overflow-x: clip;
 }
 
+.admin-lock-shell {
+  display: grid;
+  place-items: center;
+  padding: 28px;
+}
+
+.admin-lock-panel {
+  width: min(100%, 420px);
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 24px 70px rgba(16, 21, 20, 0.1);
+}
+
+.admin-lock-mark {
+  width: 104px;
+  height: auto;
+  margin-bottom: 22px;
+}
+
+.admin-lock-panel h1 {
+  margin: 0 0 18px;
+  font-size: 32px;
+  line-height: 1.06;
+}
+
+.admin-lock-form {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-lock-form label {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.admin-lock-error {
+  margin: 0;
+  color: #b42318;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
 .admin-hero {
   display: flex;
   align-items: flex-start;

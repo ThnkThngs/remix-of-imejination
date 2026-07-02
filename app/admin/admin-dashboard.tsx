@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type DragEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type DragEvent, type FormEvent, type ReactNode } from "react";
 import {
   adminStorageKey,
   cloneState,
@@ -18,6 +18,7 @@ import {
   type PortfolioImage,
   type PortfolioItem,
 } from "@/lib/admin-data";
+import { adminSessionKey, isAdminPasswordValid } from "@/lib/admin-auth";
 import { generateUploadVariants } from "@/lib/image-tools";
 
 type AdminTab = "leads" | "portfolio";
@@ -78,6 +79,32 @@ function clonePortfolioItem(item: PortfolioItem): PortfolioItem {
     tags: [...item.tags],
     images: item.images.map((image) => ({ ...image })),
   };
+}
+
+function loadInitialAdminState() {
+  if (typeof window === "undefined") {
+    return cloneState(seedState);
+  }
+
+  try {
+    const saved = window.localStorage.getItem(adminStorageKey);
+    if (!saved) {
+      return cloneState(seedState);
+    }
+
+    const parsed = JSON.parse(saved) as AdminState;
+    if (Array.isArray(parsed.leads) && Array.isArray(parsed.portfolioItems)) {
+      return parsed;
+    }
+  } catch {
+    return cloneState(seedState);
+  }
+
+  return cloneState(seedState);
+}
+
+function loadAdminSession() {
+  return typeof window !== "undefined" && window.sessionStorage.getItem(adminSessionKey) === "true";
 }
 
 function moveItemToFront<T>(items: T[], index: number) {
@@ -257,12 +284,14 @@ function CheckIcon() {
 }
 
 export default function AdminDashboard() {
-  const [hydrated, setHydrated] = useState(false);
-  const [state, setState] = useState<AdminState>(() => cloneState(seedState));
+  const [authenticated, setAuthenticated] = useState(loadAdminSession);
+  const [passwordDraft, setPasswordDraft] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [state, setState] = useState<AdminState>(loadInitialAdminState);
   const [activeTab, setActiveTab] = useState<AdminTab>("leads");
-  const [selectedLeadId, setSelectedLeadId] = useState(seedState.leads[0]?.id ?? "");
+  const [selectedLeadId, setSelectedLeadId] = useState(() => state.leads[0]?.id ?? "");
   const [selectedPortfolioId, setSelectedPortfolioId] = useState(
-    seedState.portfolioItems[0]?.id ?? ""
+    () => state.portfolioItems[0]?.id ?? ""
   );
   const [portfolioMode, setPortfolioMode] = useState<PortfolioMode>("edit");
   const [portfolioSearch, setPortfolioSearch] = useState("");
@@ -278,46 +307,12 @@ export default function AdminDashboard() {
   const kanbanBoardRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    try {
-      const saved = window.localStorage.getItem(adminStorageKey);
-      if (saved) {
-        const parsed = JSON.parse(saved) as AdminState;
-        if (Array.isArray(parsed.leads) && Array.isArray(parsed.portfolioItems)) {
-          setState(parsed);
-          if (parsed.leads[0]) {
-            setSelectedLeadId(parsed.leads[0].id);
-          }
-          if (parsed.portfolioItems[0]) {
-            setSelectedPortfolioId(parsed.portfolioItems[0].id);
-          }
-        }
-      }
-    } catch {
-      setState(cloneState(seedState));
-    } finally {
-      setHydrated(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!hydrated) {
+    if (typeof window === "undefined") {
       return;
     }
 
     window.localStorage.setItem(adminStorageKey, JSON.stringify(state));
-  }, [state, hydrated]);
-
-  useEffect(() => {
-    if (!selectedLeadId && state.leads[0]) {
-      setSelectedLeadId(state.leads[0].id);
-    }
-  }, [state.leads, selectedLeadId]);
-
-  useEffect(() => {
-    if (!selectedPortfolioId && state.portfolioItems[0]) {
-      setSelectedPortfolioId(state.portfolioItems[0].id);
-    }
-  }, [selectedPortfolioId, state.portfolioItems]);
+  }, [state]);
 
   useEffect(() => {
     if (activeTab === "leads" && kanbanBoardRef.current) {
@@ -327,10 +322,6 @@ export default function AdminDashboard() {
 
   const allTags = collectTagPool(state.portfolioItems);
   const selectedLead = state.leads.find((lead) => lead.id === selectedLeadId) ?? state.leads[0];
-  const selectedPortfolio =
-    state.portfolioItems.find((item) => item.id === selectedPortfolioId) ??
-    state.portfolioItems[0] ??
-    createEmptyPortfolioDraft((state.portfolioItems[state.portfolioItems.length - 1]?.order ?? 0) + 1);
   const visiblePortfolio = state.portfolioItems
     .filter((item) => {
       const matchesQuery =
@@ -344,16 +335,9 @@ export default function AdminDashboard() {
     })
     .sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
 
-  const [portfolioDraft, setPortfolioDraft] = useState<PortfolioItem>(
-    () => clonePortfolioItem(seedState.portfolioItems[0])
+  const [portfolioDraft, setPortfolioDraft] = useState<PortfolioItem>(() =>
+    clonePortfolioItem(state.portfolioItems[0] ?? createEmptyPortfolioDraft(1))
   );
-
-  useEffect(() => {
-    if (portfolioMode === "edit" && selectedPortfolio) {
-      setPortfolioDraft(clonePortfolioItem(selectedPortfolio));
-      setTagDraft("");
-    }
-  }, [portfolioMode, selectedPortfolio, selectedPortfolioId]);
 
   function resetSeedData() {
     const next = cloneState(seedState);
@@ -638,6 +622,62 @@ export default function AdminDashboard() {
     allTags
   );
 
+  function submitPassword(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!isAdminPasswordValid(passwordDraft)) {
+      setPasswordError("Password does not match.");
+      setPasswordDraft("");
+      return;
+    }
+
+    window.sessionStorage.setItem(adminSessionKey, "true");
+    setAuthenticated(true);
+    setPasswordDraft("");
+    setPasswordError("");
+  }
+
+  function lockAdmin() {
+    window.sessionStorage.removeItem(adminSessionKey);
+    setAuthenticated(false);
+    setPasswordDraft("");
+    setPasswordError("");
+  }
+
+  if (!authenticated) {
+    return (
+      <main className="admin-shell admin-lock-shell">
+        <section className="admin-lock-panel" aria-labelledby="admin-lock-title">
+          <img
+            src="/brand/imejination-stacked.png"
+            alt="Imejination"
+            className="admin-lock-mark"
+          />
+          <p className="admin-eyebrow">Imejination Sdn Bhd</p>
+          <h1 id="admin-lock-title">Admin access</h1>
+          <form className="admin-lock-form" onSubmit={submitPassword}>
+            <label htmlFor="admin-password">Password</label>
+            <input
+              id="admin-password"
+              className="admin-input"
+              type="password"
+              value={passwordDraft}
+              onChange={(event) => {
+                setPasswordDraft(event.target.value);
+                setPasswordError("");
+              }}
+              autoComplete="current-password"
+            />
+            {passwordError ? <p className="admin-lock-error">{passwordError}</p> : null}
+            <button type="submit" className="admin-button">
+              Unlock admin
+            </button>
+          </form>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main className="admin-shell">
       <header className="admin-hero">
@@ -657,6 +697,9 @@ export default function AdminDashboard() {
           </div>
         </div>
         <div className="admin-toolbar">
+          <button type="button" className="admin-button secondary" onClick={lockAdmin}>
+            Lock admin
+          </button>
           <button type="button" className="admin-button secondary" onClick={resetSeedData}>
             Reset demo
           </button>
