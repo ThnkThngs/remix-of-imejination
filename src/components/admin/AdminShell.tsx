@@ -13,6 +13,7 @@ import {
 import { useState, type ReactNode } from "react";
 import { useAdminAuth } from "@/lib/admin/store";
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/sonner";
 
 const NAV = [
   { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
