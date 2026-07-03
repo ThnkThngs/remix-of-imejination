@@ -320,7 +320,7 @@ export function useHomepageContent() {
       hero_video: next.hero_video,
       hero_cta: next.hero_cta,
       about_text: next.about_text,
-      statistics: next.statistics,
+      statistics: next.statistics as unknown as any,
     };
     if (next.id) {
       const { error } = await supabase.from("homepage").update(payload).eq("id", next.id);
