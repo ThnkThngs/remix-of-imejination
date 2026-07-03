@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      homepage: {
+        Row: {
+          about_text: string | null
+          created_at: string
+          hero_cta: string | null
+          hero_subtitle: string | null
+          hero_title: string | null
+          hero_video: string | null
+          id: string
+          statistics: Json
+          updated_at: string
+        }
+        Insert: {
+          about_text?: string | null
+          created_at?: string
+          hero_cta?: string | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
+          hero_video?: string | null
+          id?: string
+          statistics?: Json
+          updated_at?: string
+        }
+        Update: {
+          about_text?: string | null
+          created_at?: string
+          hero_cta?: string | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
+          hero_video?: string | null
+          id?: string
+          statistics?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           ai_recommendation: string | null
@@ -26,11 +62,13 @@ export type Database = {
           email: string
           id: string
           location: string | null
+          message: string | null
           name: string
           phone: string | null
           preferred_contact: string | null
           project_name: string | null
           project_type: string | null
+          service: string | null
           status: string
         }
         Insert: {
@@ -44,11 +82,13 @@ export type Database = {
           email: string
           id?: string
           location?: string | null
+          message?: string | null
           name: string
           phone?: string | null
           preferred_contact?: string | null
           project_name?: string | null
           project_type?: string | null
+          service?: string | null
           status?: string
         }
         Update: {
@@ -62,12 +102,95 @@ export type Database = {
           email?: string
           id?: string
           location?: string | null
+          message?: string | null
           name?: string
           phone?: string | null
           preferred_contact?: string | null
           project_name?: string | null
           project_type?: string | null
+          service?: string | null
           status?: string
+        }
+        Relationships: []
+      }
+      portfolio: {
+        Row: {
+          category: string | null
+          cover_image: string | null
+          created_at: string
+          description: string | null
+          display_order: number
+          featured: boolean
+          gallery_images: string[]
+          id: string
+          location: string | null
+          published: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          cover_image?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          featured?: boolean
+          gallery_images?: string[]
+          id?: string
+          location?: string | null
+          published?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          cover_image?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          featured?: boolean
+          gallery_images?: string[]
+          id?: string
+          location?: string | null
+          published?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      services: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          icon: string | null
+          id: string
+          image: string | null
+          published: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          icon?: string | null
+          id?: string
+          image?: string | null
+          published?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          icon?: string | null
+          id?: string
+          image?: string | null
+          published?: boolean
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }

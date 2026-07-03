@@ -4,9 +4,11 @@ import { Lock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useAdminAuth } from "@/lib/admin/store";
+import { supabase } from "@/integrations/supabase/client";
+import { checkIsAdmin } from "@/lib/admin/store";
 
 export const Route = createFileRoute("/admin/login")({
+  ssr: false,
   head: () => ({
     meta: [
       { title: "Admin sign in · Imejination" },
@@ -17,26 +19,37 @@ export const Route = createFileRoute("/admin/login")({
 });
 
 function LoginPage() {
-  const { signIn } = useAdminAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!email.trim() || !password.trim()) {
+    if (!email.trim() || !password) {
       setError("Enter your email and password.");
       return;
     }
     setLoading(true);
-    // Mock auth. Replace with supabase.auth.signInWithPassword + has_role check.
-    setTimeout(() => {
-      signIn(email.trim());
-      navigate({ to: "/admin/dashboard" });
-    }, 350);
+    const { data, error: signInError } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+    if (signInError || !data.user) {
+      setLoading(false);
+      setError(signInError?.message ?? "Sign in failed.");
+      return;
+    }
+    const isAdmin = await checkIsAdmin(data.user.id);
+    if (!isAdmin) {
+      await supabase.auth.signOut();
+      setLoading(false);
+      setError("This account does not have admin access.");
+      return;
+    }
+    navigate({ to: "/admin/dashboard" });
   }
 
   return (
@@ -94,7 +107,7 @@ function LoginPage() {
             {loading ? "Signing in…" : "Sign in"}
           </Button>
           <p className="text-center text-[11px] text-white/40">
-            Demo mode — any email + password will unlock the dashboard.
+            Admin access is granted via the <code>user_roles</code> table.
           </p>
         </form>
       </div>
