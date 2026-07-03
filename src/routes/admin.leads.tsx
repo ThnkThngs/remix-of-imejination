@@ -38,7 +38,10 @@ function LeadsPage() {
     return leads.filter((l) => {
       const matchQ =
         !q ||
-        [l.name, l.email, l.service, l.message].join(" ").toLowerCase().includes(q.toLowerCase());
+        [l.name, l.email, l.service ?? "", l.message ?? ""]
+          .join(" ")
+          .toLowerCase()
+          .includes(q.toLowerCase());
       const matchS = status === "all" || l.status === status;
       return matchQ && matchS;
     });
@@ -46,7 +49,15 @@ function LeadsPage() {
 
   function exportCsv() {
     const header = ["Name", "Email", "Phone", "Service", "Message", "Status", "Created"];
-    const rows = filtered.map((l) => [l.name, l.email, l.phone, l.service, l.message.replace(/\n/g, " "), l.status, l.created_at]);
+    const rows = filtered.map((l) => [
+      l.name,
+      l.email,
+      l.phone ?? "",
+      l.service ?? "",
+      (l.message ?? "").replace(/\n/g, " "),
+      l.status,
+      l.created_at,
+    ]);
     const csv = [header, ...rows]
       .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
       .join("\n");
@@ -116,11 +127,11 @@ function LeadsPage() {
                 <TableCell className="text-white">{l.name}</TableCell>
                 <TableCell className="text-sm text-white/70">
                   <div>{l.email}</div>
-                  <div className="text-white/40">{l.phone}</div>
+                  <div className="text-white/40">{l.phone ?? "—"}</div>
                 </TableCell>
-                <TableCell className="text-sm text-white/70">{l.service}</TableCell>
+                <TableCell className="text-sm text-white/70">{l.service ?? "—"}</TableCell>
                 <TableCell className="max-w-md text-sm text-white/60">
-                  <p className="line-clamp-2">{l.message}</p>
+                  <p className="line-clamp-2">{l.message ?? "—"}</p>
                 </TableCell>
                 <TableCell>
                   <Select
@@ -153,7 +164,7 @@ function LeadsPage() {
             {filtered.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6} className="py-12 text-center text-sm text-white/40">
-                  No leads match your filters.
+                  No leads yet.
                 </TableCell>
               </TableRow>
             )}

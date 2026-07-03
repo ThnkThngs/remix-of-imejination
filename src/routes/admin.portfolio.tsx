@@ -35,11 +35,15 @@ const empty: PortfolioItem = {
   id: "",
   title: "",
   category: "",
+  location: "",
   description: "",
-  image_url: "",
-  project_date: new Date().toISOString().slice(0, 10),
+  cover_image: "",
+  gallery_images: [],
   published: false,
   featured: false,
+  display_order: 0,
+  created_at: "",
+  updated_at: "",
 };
 
 function PortfolioAdmin() {
@@ -48,7 +52,7 @@ function PortfolioAdmin() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   function openNew() {
-    setEditing({ ...empty, id: `p-${Date.now()}` });
+    setEditing({ ...empty });
   }
 
   function save() {
@@ -74,10 +78,9 @@ function PortfolioAdmin() {
             className="group flex flex-col overflow-hidden rounded-lg border border-white/10 bg-white/[0.03]"
           >
             <div className="relative aspect-[4/3] overflow-hidden bg-black">
-              {item.image_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
+              {item.cover_image ? (
                 <img
-                  src={item.image_url}
+                  src={item.cover_image}
                   alt={item.title}
                   className="h-full w-full object-cover opacity-80 transition-opacity group-hover:opacity-100"
                 />
@@ -94,9 +97,7 @@ function PortfolioAdmin() {
                 )}
                 <span
                   className={`rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider ${
-                    item.published
-                      ? "bg-emerald-400/90 text-black"
-                      : "bg-white/10 text-white/70"
+                    item.published ? "bg-emerald-400/90 text-black" : "bg-white/10 text-white/70"
                   }`}
                 >
                   {item.published ? "Live" : "Draft"}
@@ -104,24 +105,26 @@ function PortfolioAdmin() {
               </div>
             </div>
             <div className="flex flex-1 flex-col p-4">
-              <p className="text-[11px] uppercase tracking-[0.2em] text-primary">{item.category}</p>
-              <h3 className="mt-2 font-display text-lg leading-tight text-white">{item.title}</h3>
-              <p className="mt-2 line-clamp-2 text-sm text-white/50">{item.description}</p>
-              <p className="mt-3 text-xs text-white/40">
-                {new Date(item.project_date).toLocaleDateString(undefined, {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })}
+              <p className="text-[11px] uppercase tracking-[0.2em] text-primary">
+                {item.category ?? "—"}
               </p>
+              <h3 className="mt-2 font-display text-lg leading-tight text-white">{item.title}</h3>
+              <p className="mt-2 line-clamp-2 text-sm text-white/50">{item.description ?? ""}</p>
+              <p className="mt-3 text-xs text-white/40">{item.location ?? ""}</p>
               <div className="mt-4 flex flex-wrap gap-1.5 border-t border-white/5 pt-3">
                 <IconBtn onClick={() => setEditing(item)} label="Edit">
                   <Pencil className="h-3.5 w-3.5" />
                 </IconBtn>
-                <IconBtn onClick={() => togglePublished(item.id)} label={item.published ? "Unpublish" : "Publish"}>
+                <IconBtn
+                  onClick={() => togglePublished(item.id)}
+                  label={item.published ? "Unpublish" : "Publish"}
+                >
                   {item.published ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                 </IconBtn>
-                <IconBtn onClick={() => toggleFeatured(item.id)} label={item.featured ? "Unfeature" : "Feature"}>
+                <IconBtn
+                  onClick={() => toggleFeatured(item.id)}
+                  label={item.featured ? "Unfeature" : "Feature"}
+                >
                   <Star className={`h-3.5 w-3.5 ${item.featured ? "fill-primary text-primary" : ""}`} />
                 </IconBtn>
                 <IconBtn onClick={() => setDeleteId(item.id)} label="Delete" tone="danger">
@@ -131,35 +134,61 @@ function PortfolioAdmin() {
             </div>
           </article>
         ))}
+        {items.length === 0 && (
+          <p className="col-span-full py-16 text-center text-sm text-white/40">
+            No projects yet. Create your first one.
+          </p>
+        )}
       </div>
 
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
         <DialogContent className="border-white/10 bg-black text-white sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="font-display text-2xl font-light">
-              {editing && items.some((i) => i.id === editing.id) ? "Edit project" : "New project"}
+              {editing && editing.id ? "Edit project" : "New project"}
             </DialogTitle>
           </DialogHeader>
           {editing && (
             <div className="space-y-4">
               <FieldInput label="Title" value={editing.title} onChange={(v) => setEditing({ ...editing, title: v })} />
-              <FieldInput label="Category" value={editing.category} onChange={(v) => setEditing({ ...editing, category: v })} />
+              <FieldInput label="Category" value={editing.category ?? ""} onChange={(v) => setEditing({ ...editing, category: v })} />
+              <FieldInput label="Location" value={editing.location ?? ""} onChange={(v) => setEditing({ ...editing, location: v })} />
               <div className="space-y-2">
                 <Label className="text-white/70">Description</Label>
                 <Textarea
-                  value={editing.description}
+                  value={editing.description ?? ""}
                   onChange={(e) => setEditing({ ...editing, description: e.target.value })}
                   className="border-white/10 bg-white/[0.03] text-white"
                   rows={3}
                 />
               </div>
-              <FieldInput label="Image URL" value={editing.image_url} onChange={(v) => setEditing({ ...editing, image_url: v })} placeholder="https://…" />
+              <FieldInput
+                label="Cover image URL"
+                value={editing.cover_image ?? ""}
+                onChange={(v) => setEditing({ ...editing, cover_image: v })}
+                placeholder="https://…"
+              />
               <div className="space-y-2">
-                <Label className="text-white/70">Project date</Label>
+                <Label className="text-white/70">Gallery images (one URL per line)</Label>
+                <Textarea
+                  value={(editing.gallery_images ?? []).join("\n")}
+                  onChange={(e) =>
+                    setEditing({
+                      ...editing,
+                      gallery_images: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean),
+                    })
+                  }
+                  className="border-white/10 bg-white/[0.03] text-white"
+                  rows={4}
+                  placeholder="https://…"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-white/70">Display order</Label>
                 <Input
-                  type="date"
-                  value={editing.project_date}
-                  onChange={(e) => setEditing({ ...editing, project_date: e.target.value })}
+                  type="number"
+                  value={editing.display_order}
+                  onChange={(e) => setEditing({ ...editing, display_order: Number(e.target.value) })}
                   className="border-white/10 bg-white/[0.03] text-white"
                 />
               </div>
@@ -197,7 +226,7 @@ function PortfolioAdmin() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete this project?</AlertDialogTitle>
             <AlertDialogDescription className="text-white/60">
-              This can't be undone (in mock mode it removes the local copy).
+              This permanently removes the project from the database.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

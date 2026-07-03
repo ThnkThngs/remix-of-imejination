@@ -41,15 +41,14 @@ export function AdminShell({
   const { session, signOut } = useAdminAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  function handleSignOut() {
-    signOut();
+  async function handleSignOut() {
+    await signOut();
     navigate({ to: "/admin/login" });
   }
 
   return (
     <div className="min-h-screen w-full bg-black text-white">
       <div className="flex min-h-screen">
-        {/* Sidebar */}
         <aside
           className={cn(
             "fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-white/10 bg-black transition-transform md:static md:translate-x-0",
@@ -105,7 +104,6 @@ export function AdminShell({
           />
         )}
 
-        {/* Main */}
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b border-white/10 bg-black/80 px-4 backdrop-blur md:px-8">
             <div className="flex items-center gap-3">
